@@ -73,4 +73,15 @@ namespace Refine::Rendering {
                 nullptr);
         glBindVertexArray(0);
     }
+
+    void GlMesh::updateGeometry(const std::vector<Point> &newPoints)
+    {
+        glBindVertexArray(m_vertexArrayObject);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
+        glBufferData(
+                GL_ARRAY_BUFFER,
+                newPoints.size() * sizeof(Point),
+                newPoints.data(),
+                GL_STATIC_DRAW);
+    }
 }

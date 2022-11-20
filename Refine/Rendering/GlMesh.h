@@ -15,6 +15,8 @@ namespace Refine::Rendering {
 
         void draw() const;
 
+        void updateGeometry(const std::vector<Point> &newPoints);
+
     private:
         int m_nElements;
 

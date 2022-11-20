@@ -21,9 +21,9 @@ namespace Refine::Geometry {
             const int bInd = vertexIndicesTri[triangleInd * 3 + 1];
             const int cInd = vertexIndicesTri[triangleInd * 3 + 2];
 
-            //assert(aInd != bInd);
-            //assert(aInd != cInd);
-            //assert(bInd != cInd);
+            assert(aInd != bInd);
+            assert(aInd != cInd);
+            assert(bInd != cInd);
 
             ++nTrianglesByVertex[aInd];
             ++nTrianglesByVertex[bInd];

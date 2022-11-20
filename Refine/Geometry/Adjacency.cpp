@@ -14,9 +14,9 @@ namespace Refine::Geometry::Adjacency {
         const int nTriangles = vertexIndicesTri.size() / 3;
         for (int triangleInd = 0; triangleInd < nTriangles; ++triangleInd) {
 
-            const int aInd = triangleInd * 3 + 0;
-            const int bInd = triangleInd * 3 + 1;
-            const int cInd = triangleInd * 3 + 2;
+            const int aInd = vertexIndicesTri[triangleInd * 3 + 0];
+            const int bInd = vertexIndicesTri[triangleInd * 3 + 1];
+            const int cInd = vertexIndicesTri[triangleInd * 3 + 2];
 
             assert(aInd != bInd);
             assert(aInd != cInd);
