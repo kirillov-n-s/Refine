@@ -6,7 +6,7 @@
 
 namespace Refine::IO {
 
-    Geometry::PolyMesh readObj(
+    Geometry::MeshPoly readObj(
             const std::string &path,
             std::string &error,
             const SettingsObjReader &settings)
@@ -49,7 +49,7 @@ namespace Refine::IO {
                 file >> w;
                 if (!file)
                     file.clear();
-                else if (settings.errorOnVertex4thNotOne && Common::fuzzyCompare(w, 1.0f))
+                else if (settings.errorOnVertex4NotOne && Common::fuzzyCompare(w, 1.0f))
                     error = "4th vertex coordinate not equal to 1.";
                 if (!error.empty())
                     return {};
@@ -64,7 +64,7 @@ namespace Refine::IO {
                 file >> z;
                 if (!file)
                     file.clear();
-                else if (settings.errorOnTexcoord3rdNotZero && Common::fuzzyIsNull(z))
+                else if (settings.errorOnTexcoord3NotZero && Common::fuzzyIsNull(z))
                     error = "3rd texture coordinate not equal to 0.";
                 if (!error.empty())
                     return {};
@@ -188,15 +188,16 @@ namespace Refine::IO {
             vertexIndices,
             polygonStarts,
             {},
-            texcoords,
-            texcoordIndices
+            settings.readTexcoords ? texcoords : std::vector<glm::vec2>{},
+            settings.readTexcoords ? texcoordIndices : std::vector<int>{}
         };
     }
 
     void writeObj(
-            const Geometry::PolyMesh &mesh,
+            const Geometry::MeshPoly &mesh,
             const std::string &path,
-            std::string &error)
+            std::string &error,
+            const SettingsObjWriter &settings)
     {
         error = "";
 
@@ -206,32 +207,38 @@ namespace Refine::IO {
             return;
         }
 
+        const bool hasTexcoords = mesh.hasTexcoords();
+        const bool hasNormals = mesh.hasNormals();
+
         for (const glm::vec3 &vertex : mesh.vertices)
             file << "v "
                  << vertex.x << ' '
                  << vertex.y << ' '
                  << vertex.z << "\n";
         file << '\n';
-        for (const glm::vec2 &texcoord : mesh.texcoords)
-            file << "vt "
-                 << texcoord.x << ' '
-                 << texcoord.y << '\n';
-        if (!mesh.texcoords.empty())
+
+        if (hasTexcoords && settings.writeTexcoords) {
+
+            for (const glm::vec2 &texcoord : mesh.texcoords)
+                file << "vt "
+                     << texcoord.x << ' '
+                     << texcoord.y << '\n';
             file << '\n';
-        for (const glm::vec3 &normal : mesh.normals)
-            file << "vn "
-                 << normal.x << ' '
-                 << normal.y << ' '
-                 << normal.z << '\n';
-        if (!mesh.normals.empty())
+        }
+
+        if (hasNormals && settings.writeNormals) {
+
+            for (const glm::vec3 &normal : mesh.normals)
+                file << "vn "
+                     << normal.x << ' '
+                     << normal.y << ' '
+                     << normal.z << '\n';
             file << '\n';
+        }
 
         const std::vector<int> &vertexIndices = mesh.vertexIndices;
         const std::vector<int> &texcoordIndices = mesh.texcoordIndices;
         const std::vector<int> &polygonStarts = mesh.polygonStarts;
-
-        const bool hasTexcoords = !mesh.texcoords.empty() && !texcoordIndices.empty();
-        const bool hasNormals = !mesh.normals.empty();
 
         std::function<void(
                 const std::vector<int> &,

@@ -1,25 +1,36 @@
-#include <glm/gtc/epsilon.hpp>
-#include "PolyMesh.h"
+#include "MeshPoly.h"
+
+#include <utility>
 #include "../Common/Common.h"
 
 namespace Refine::Geometry {
 
-    PolyMesh::PolyMesh(
-            const std::vector<glm::vec3> &vertices,
-            const std::vector<int> &vertexIndices,
-            const std::vector<int> &polygonStarts,
-            const std::vector<glm::vec3> &normals,
-            const std::vector<glm::vec2> &texcoords,
-            const std::vector<int> &texcoordIndices)
-        : vertices(vertices),
-          vertexIndices(vertexIndices),
-          polygonStarts(polygonStarts),
-          normals(normals),
-          texcoords(texcoords),
-          texcoordIndices(texcoordIndices)
+    MeshPoly::MeshPoly(
+            std::vector<glm::vec3> vertices,
+            std::vector<int> vertexIndices,
+            std::vector<int> polygonStarts,
+            std::vector<glm::vec3> normals,
+            std::vector<glm::vec2> texcoords,
+            std::vector<int> texcoordIndices)
+        : vertices(std::move(vertices)),
+          vertexIndices(std::move(vertexIndices)),
+          polygonStarts(std::move(polygonStarts)),
+          normals(std::move(normals)),
+          texcoords(std::move(texcoords)),
+          texcoordIndices(std::move(texcoordIndices))
     {}
 
-    bool operator==(const PolyMesh &lhs, const PolyMesh &rhs)
+    bool MeshPoly::hasTexcoords() const
+    {
+        return !texcoords.empty() && !texcoordIndices.empty();
+    }
+
+    bool MeshPoly::hasNormals() const
+    {
+        return !normals.empty();
+    }
+
+    bool operator==(const MeshPoly &lhs, const MeshPoly &rhs)
     {
         const bool areSizesEqual = lhs.vertices.size() == rhs.vertices.size()
                 && lhs.vertexIndices.size() == rhs.vertexIndices.size()
@@ -59,7 +70,7 @@ namespace Refine::Geometry {
                && lhs.texcoordIndices == rhs.texcoordIndices;
     }
 
-    bool operator!=(const PolyMesh &lhs, const PolyMesh &rhs)
+    bool operator!=(const MeshPoly &lhs, const MeshPoly &rhs)
     {
         return !(lhs == rhs);
     }

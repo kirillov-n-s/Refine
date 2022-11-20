@@ -2,24 +2,33 @@
 #define REFINE_IO_OBJ_H
 
 #include <string>
-#include "../Geometry/PolyMesh.h"
+#include "../Geometry/MeshPoly.h"
 
 namespace Refine::IO {
 
     struct SettingsObjReader
     {
-        bool errorOnVertex4thNotOne = true;
-        bool errorOnTexcoord3rdNotZero = true;
+        bool errorOnVertex4NotOne = true;
+        bool errorOnTexcoord3NotZero = true;
+        bool readTexcoords = true;
     };
 
-    Geometry::PolyMesh readObj(
+    struct SettingsObjWriter
+    {
+        bool writeTexcoords = true;
+        bool writeNormals = true;
+    };
+
+    Geometry::MeshPoly readObj(
             const std::string &path,
             std::string &error,
             const SettingsObjReader &settings = {});
+
     void writeObj(
-        const Geometry::PolyMesh &mesh,
-        const std::string &path,
-        std::string &error);
+            const Geometry::MeshPoly &mesh,
+            const std::string &path,
+            std::string &error,
+            const SettingsObjWriter &settings = {});
 }
 
 #endif
