@@ -17,13 +17,13 @@ namespace Refine::Geometry {
         const int nTriangles = vertexIndicesTri.size() / 3;
         for (int triangleInd = 0; triangleInd < nTriangles; ++triangleInd) {
 
-            const int aInd = triangleInd * 3 + 0;
-            const int bInd = triangleInd * 3 + 1;
-            const int cInd = triangleInd * 3 + 2;
+            const int aInd = vertexIndicesTri[triangleInd * 3 + 0];
+            const int bInd = vertexIndicesTri[triangleInd * 3 + 1];
+            const int cInd = vertexIndicesTri[triangleInd * 3 + 2];
 
-            assert(aInd != bInd);
-            assert(aInd != cInd);
-            assert(bInd != cInd);
+            //assert(aInd != bInd);
+            //assert(aInd != cInd);
+            //assert(bInd != cInd);
 
             ++nTrianglesByVertex[aInd];
             ++nTrianglesByVertex[bInd];
@@ -44,7 +44,7 @@ namespace Refine::Geometry {
 
             assert(nTrianglesByVertex[vertexInd] != 0);
             normals[vertexInd] /= nTrianglesByVertex[vertexInd];
-            assert(Common::fuzzyCompare(glm::length(normals[vertexInd]), 1.0f));
+            //assert(Common::fuzzyCompare(glm::length(normals[vertexInd]), 1.0f));
         }
 
         return normals;
@@ -57,11 +57,11 @@ namespace Refine::Geometry {
         std::vector<int> indicesTri;
         indicesTri.reserve(indices.size());
 
-        const int nPolygons = polygonStarts.size();
+        const int nPolygons = polygonStarts.size() - 1;
         for (int polygonInd = 0; polygonInd < nPolygons; ++polygonInd) {
 
             const int faceBegin = polygonStarts[polygonInd];
-            const int faceEnd = polygonStarts[polygonInd + 1];
+            const int faceEnd = polygonStarts[polygonInd + 1] - 1;
             for (int faceInd = faceBegin + 1; faceInd < faceEnd; ++faceInd) {
 
                 indicesTri.push_back(indices[faceBegin]);

@@ -22,7 +22,7 @@ namespace Refine::Rendering {
 
         glVertexAttribPointer(
             0,
-            4,
+            3,
             GL_FLOAT,
             GL_FALSE,
             sizeof(Point),
@@ -30,7 +30,7 @@ namespace Refine::Rendering {
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(
             1,
-            3,
+            2,
             GL_FLOAT,
             GL_FALSE,
             sizeof(Point),

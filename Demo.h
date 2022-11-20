@@ -41,6 +41,10 @@ private:
     static inline const glm::mat4 s_model = glm::mat4 { 1.f };
     static inline const glm::mat4 s_normalModel = glm::transpose(glm::inverse(s_model));
 
+    static inline const glm::vec4 s_surfaceColor {0.4f, 0.5f, 0.8f, 1.0f};
+    static inline const glm::vec4 s_wireframeColor {0.125f, 0.125f, 0.125f, 1.0f};
+    static inline const glm::vec4 s_backgroundColor {0.5f, 0.5f, 0.5f, 1.0f};
+
     static void resizeCallback(
             GLFWwindow*,
             int newWidth,

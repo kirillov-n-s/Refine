@@ -77,16 +77,12 @@ void Demo::render()
     glPolygonOffset(1,1);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     glEnable(GL_POLYGON_OFFSET_FILL);
-    s_shader->setUniform(
-            "uColor",
-            glm::vec4{0.75f, 0.75f, 0.75f, 1.f});
+    s_shader->setUniform("uColor", s_surfaceColor);
     s_mesh->draw();
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     glDisable(GL_POLYGON_OFFSET_FILL);
-    s_shader->setUniform(
-            "uColor",
-            glm::vec4{0.5f, 0.5f, 0.5f, 1.f});
+    s_shader->setUniform("uColor", s_wireframeColor);
     s_mesh->draw();
 }
 
@@ -184,7 +180,11 @@ void Demo::run()
                 s_window,
                 (std::to_string((int)(1.f / dt)) + " fps").c_str());
 
-        glClearColor(0.15f, 0.2f, 0.3f, 1.0f);
+        glClearColor(
+                s_backgroundColor.r,
+                s_backgroundColor.g,
+                s_backgroundColor.b,
+                s_backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         handleCameraMovement(dt);

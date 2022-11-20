@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Refine/Common/Debug.h"
 #include "Refine/Geometry/Common.h"
 #include "Refine/IO/Obj.h"
@@ -13,8 +12,13 @@ int main()
     const std::string pathShaders = path + "shaders/";
 
     std::string error = "";
-    const Refine::Geometry::MeshPoly meshPoly =
-            Refine::IO::readObj(pathMeshes + "read/case.obj", error);
+    const Refine::Geometry::MeshPoly meshPoly = Refine::IO::readObj(
+            pathMeshes + "read/case.obj",
+            error,
+            Refine::IO::SettingsObjReader
+            {
+                .readTexcoords = false
+            });
     Refine::Common::exitOnError(error, 1);
 
     const Refine::Geometry::MeshTri meshTri(

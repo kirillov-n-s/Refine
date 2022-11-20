@@ -22,3 +22,7 @@ add_executable(Refine
         Refine/Rendering/Common.h Refine/Rendering/Common.cpp
         Refine/Rendering/GlMesh.h Refine/Rendering/GlMesh.cpp
         Refine/Rendering/GlShader.h Refine/Rendering/GlShader.cpp)
+
+target_link_libraries(Refine GL)
+target_link_libraries(Refine GLEW)
+target_link_libraries(Refine glfw)
