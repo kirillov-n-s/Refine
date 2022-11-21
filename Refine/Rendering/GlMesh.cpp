@@ -4,10 +4,8 @@
 
 namespace Refine::Rendering {
 
-    GlMesh::GlMesh(
-            const std::vector<Point> &points,
-            const std::vector<unsigned int> &indices)
-        : m_nElements(indices.size())
+    GlMesh::GlMesh(const GlBuffer &buffer)
+        : m_nElements(buffer.elements.size())
     {
         glGenVertexArrays(1, &m_vertexArrayObject);
         glBindVertexArray(m_vertexArrayObject);
@@ -16,8 +14,8 @@ namespace Refine::Rendering {
         glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
         glBufferData(
             GL_ARRAY_BUFFER,
-            points.size() * sizeof(Point),
-            points.data(),
+            buffer.points.size() * sizeof(Point),
+            buffer.points.data(),
             GL_STATIC_DRAW);
 
         glVertexAttribPointer(
@@ -50,7 +48,7 @@ namespace Refine::Rendering {
         glBufferData(
                 GL_ELEMENT_ARRAY_BUFFER,
                 m_nElements * sizeof(unsigned int),
-                indices.data(),
+                buffer.elements.data(),
                 GL_STATIC_DRAW);
 
         glBindVertexArray(0);
@@ -74,14 +72,14 @@ namespace Refine::Rendering {
         glBindVertexArray(0);
     }
 
-    void GlMesh::updateGeometry(const std::vector<Point> &newPoints)
+    void GlMesh::swapVertexBuffer(const GlBuffer &buffer) const
     {
         glBindVertexArray(m_vertexArrayObject);
         glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObject);
         glBufferData(
                 GL_ARRAY_BUFFER,
-                newPoints.size() * sizeof(Point),
-                newPoints.data(),
+                buffer.points.size() * sizeof(Point),
+                buffer.points.data(),
                 GL_STATIC_DRAW);
     }
 }

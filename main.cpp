@@ -14,7 +14,7 @@ int main()
 
     std::string error = "";
     const Refine::Geometry::MeshPoly meshPoly = Refine::IO::readObj(
-            pathMeshes + "sphere.obj",
+            pathMeshes + "ellipsoidL2.obj",
             error,
             Refine::IO::SettingsObjReader
             {
@@ -31,26 +31,33 @@ int main()
             ? Refine::Geometry::triangulate(meshPoly.texcoordIndices, meshPoly.polygonStarts)
             : std::vector<int> {});
 
-    std::vector<Refine::Rendering::Point> points;
-    std::vector<unsigned int> indices;
-    Refine::Rendering::glBuffers(meshTri, points, indices);
-
     const int nVertices = meshTri.vertices.size();
-    std::vector<float> masses(nVertices, 1.0f);
-    //masses.front() = INFINITY;
-    masses.back() = INFINITY;
-    auto *problem = new Refine::PBD::ProblemPositional(meshTri.vertices, masses, 1, 500);
-    problem->addForce(new Refine::PBD::ForceConstant());
-    problem->addConstraint(new Refine::PBD::ConstraintBox(glm::vec3(-1.5f), glm::vec3(5.0f)));
+    std::vector<float> weights(nVertices, 1.0f);
+    weights.front() = 0.0f;
+    //weights.back() = 0.0f;
+
+    const Refine::Spatial::AABB aabb {
+        .min = glm::vec3(-10.0f),
+        .max = glm::vec3(10.0f)
+    };
+    Refine::PBD::ProblemPositional problem(
+            meshTri.vertices,
+            weights,
+            aabb,
+            4,
+            10);
+    problem.addForce(new Refine::PBD::ForceConstant());
+
     const std::vector<std::pair<int, int>> edges =
             Refine::Geometry::Adjacency::vertexToVertexPairsSymmetric(meshTri.vertexIndices);
-    problem->addConstraint(new Refine::PBD::ConstraintDistance(meshTri.vertices, edges));
+    problem.addConstraint(new Refine::PBD::ConstraintDistance(meshTri.vertices, edges, 0.0001f));
 
     Demo::create(1600, 900, error);
     Refine::Common::exitOnError(error, 2);
 
-    auto* glMesh = new Refine::Rendering::GlMesh(points, indices);
-    auto* glShader = new Refine::Rendering::GlShader(
+    Refine::Rendering::GlBuffer glBuffer(meshTri);
+    Refine::Rendering::GlMesh glMesh(glBuffer);
+    Refine::Rendering::GlShader glShader(
             pathShaders + "main.vert",
             pathShaders + "main.frag",
             error);
@@ -58,9 +65,10 @@ int main()
 
     Demo::load(
             &meshTri,
-            problem,
-            glMesh,
-            glShader);
+            &problem,
+            &glBuffer,
+            &glMesh,
+            &glShader);
     Demo::run();
     Demo::destroy();
 }

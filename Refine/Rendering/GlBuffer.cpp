@@ -1,5 +1,5 @@
 #include <unordered_map>
-#include "Common.h"
+#include "GlBuffer.h"
 
 namespace Refine::Rendering {
 
@@ -69,28 +69,41 @@ namespace Refine::Rendering {
         return !(lhs == rhs);
     }
 
-    void glBuffers(
-            const Geometry::MeshTri &mesh,
-            std::vector<Point> &points,
-            std::vector<unsigned int> &indices)
+    GlBuffer::GlBuffer(const Geometry::MeshTri &mesh)
     {
-        std::unordered_map<Index, unsigned int> indToBufferIndMap;
+        std::unordered_map<Index, unsigned int> indToElemMap;
         const int nFlatIndices = mesh.vertexIndices.size();
         for (int flatInd = 0; flatInd < nFlatIndices; flatInd++) {
 
             const Index& index = makeIndex(mesh, flatInd);
 
-            const auto &mapPairIt = indToBufferIndMap.find(index);
-            if (mapPairIt != indToBufferIndMap.end()) {
-                indices.push_back(mapPairIt->second);
+            const auto &mapPairIt = indToElemMap.find(index);
+            if (mapPairIt != indToElemMap.end()) {
+                elements.push_back(mapPairIt->second);
                 continue;
             }
 
-            const unsigned int bufferInd = indToBufferIndMap.size();
-            indToBufferIndMap[index] = bufferInd;
+            const unsigned int elem = indToElemMap.size();
+            indToElemMap[index] = elem;
 
-            indices.push_back(bufferInd);
             points.push_back(pointAtIndex(mesh, index));
+            indices.push_back(index);
+            elements.push_back(elem);
+        }
+    }
+
+    void GlBuffer::updateGeometry(
+            const std::vector<glm::vec3> &vertices,
+            const std::vector<glm::vec3> &normals)
+    {
+        const int nPoints = points.size();
+        for (int ind = 0; ind < nPoints; ++ind) {
+
+            const Index &index = indices[ind];
+            Point &point = points[ind];
+
+            point.vertex = vertices[index.vertex];
+            point.normal = normals[index.normal];
         }
     }
 }

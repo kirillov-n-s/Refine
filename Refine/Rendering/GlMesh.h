@@ -1,21 +1,19 @@
 #ifndef REFINE_RENDERING_GLMESH_H
 #define REFINE_RENDERING_GLMESH_H
 
-#include "Common.h"
+#include "GlBuffer.h"
 
 namespace Refine::Rendering {
 
     class GlMesh
     {
     public:
-        GlMesh(
-                const std::vector<Point> &points,
-                const std::vector<unsigned int> &indices);
+        GlMesh(const GlBuffer &buffer);
         ~GlMesh();
 
         void draw() const;
 
-        void updateGeometry(const std::vector<Point> &newPoints);
+        void swapVertexBuffer(const GlBuffer &buffer) const;
 
     private:
         int m_nElements;

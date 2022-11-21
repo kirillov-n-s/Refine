@@ -56,11 +56,13 @@ void Demo::create(int width, int height, std::string &error)
 void Demo::load(
         Refine::Geometry::MeshTri *mesh,
         Refine::PBD::ProblemPositional *problem,
+        Refine::Rendering::GlBuffer *glBuffer,
         Refine::Rendering::GlMesh *glMesh,
         Refine::Rendering::GlShader *glShader)
 {
     s_mesh = mesh;
     s_problem = problem;
+    s_glBuffer = glBuffer;
     s_glMesh = glMesh;
     s_glShader = glShader;
 }
@@ -90,6 +92,7 @@ void Demo::run()
 
     s_camera = {};
 
+    int frameInd = 0;
     while (!glfwWindowShouldClose(s_window))
     {
         currentFrameElapsed = glfwGetTime();
@@ -107,19 +110,37 @@ void Demo::run()
                 s_backgroundColor.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        double then = glfwGetTime();
         handleCameraMovement(dt);
-        runSimulation(dt);
+        if (frameInd % 60 == 0)
+            std::cout << "handleCameraMovement: " << ((glfwGetTime() - then) * 1e6f) << " us" << std::endl;
+
+        then = glfwGetTime();
+        if (!s_isPaused)
+            runSimulation(dt);
+        if (frameInd % 60 == 0)
+            std::cout << "runSimulation: " << ((glfwGetTime() - then) * 1e6f) << " us" << std::endl;
+
+        then = glfwGetTime();
+        if (!s_isPaused)
+            updateVisuals();
+        if (frameInd % 60 == 0)
+            std::cout << "updateVisuals: " << ((glfwGetTime() - then) * 1e6f) << " us" << std::endl;
+
+        then = glfwGetTime();
         render();
+        if (frameInd % 60 == 0)
+            std::cout << "render: " << ((glfwGetTime() - then) * 1e6f) << " us\n" << std::endl;
 
         glfwSwapBuffers(s_window);
         glfwPollEvents();
+
+        ++frameInd;
     }
 }
 
 void Demo::destroy()
 {
-    delete s_glMesh;
-    delete s_glShader;
     glfwTerminate();
 }
 
@@ -167,8 +188,10 @@ void Demo::keyCallback(
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(s_window, GLFW_TRUE);
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
         glfwMaximizeWindow(s_window);
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+        s_isPaused ^= true;
     if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
         s_camera = {};
 }
@@ -195,12 +218,12 @@ void Demo::runSimulation(const float dt)
 {
     s_mesh->vertices = s_problem->solveForPositions(dt);
     s_mesh->normals = Refine::Geometry::computeNormals(s_mesh->vertices, s_mesh->vertexIndices);
+}
 
-    std::vector<Refine::Rendering::Point> points;
-    std::vector<unsigned int> indices;
-    Refine::Rendering::glBuffers(*s_mesh, points, indices);
-
-    s_glMesh->updateGeometry(points);
+void Demo::updateVisuals()
+{
+    s_glBuffer->updateGeometry(s_mesh->vertices, s_mesh->normals);
+    s_glMesh->swapVertexBuffer(*s_glBuffer);
 }
 
 void Demo::render()

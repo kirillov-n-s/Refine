@@ -9,24 +9,20 @@ namespace Refine::PBD {
     class Constraint
     {
     public:
+        Constraint(const float compliance)
+            : compliance(compliance)
+        {}
+
         virtual ~Constraint() = default;
 
         virtual void solve(
+                std::vector<glm::vec3> &positions,
                 const std::vector<float> &weights,
-                std::vector<glm::vec3> &positions) = 0;
-    };
+                const float dt,
+                const glm::vec3 &min,
+                const glm::vec3 &max) = 0;
 
-    class ConstraintBox : public Constraint
-    {
-    public:
-        ConstraintBox(const glm::vec3 &min, const glm::vec3 &max);
-
-        void solve(
-                const std::vector<float> &weights,
-                std::vector<glm::vec3> &positions) override;
-
-        glm::vec3 min;
-        glm::vec3 max;
+        float compliance = 0.0f;
     };
 
     class ConstraintDistance : public Constraint
@@ -34,11 +30,15 @@ namespace Refine::PBD {
     public:
         ConstraintDistance(
                 const std::vector<glm::vec3> &restPositions,
-                const std::vector<std::pair<int, int>> &edges);
+                const std::vector<std::pair<int, int>> &edges,
+                const float compliance = 0.0f);
 
         void solve(
+                std::vector<glm::vec3> &positions,
                 const std::vector<float> &weights,
-                std::vector<glm::vec3> &positions) override;
+                const float dt,
+                const glm::vec3 &min,
+                const glm::vec3 &max) override;
 
     private:
         std::vector<std::pair<int, int>> m_edges;

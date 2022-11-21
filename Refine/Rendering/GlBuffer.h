@@ -43,10 +43,19 @@ namespace Refine::Rendering {
             const Point &lhs,
             const Point &rhs);
 
-    void glBuffers(
-            const Geometry::MeshTri &mesh,
-            std::vector<Point> &points,
-            std::vector<unsigned int> &indices);
+    class GlBuffer
+    {
+    public:
+        GlBuffer(const Geometry::MeshTri &mesh);
+
+        void updateGeometry(
+                const std::vector<glm::vec3> &vertices,
+                const std::vector<glm::vec3> &normals);
+
+        std::vector<Point> points;
+        std::vector<Index> indices;
+        std::vector<unsigned int> elements;
+    };
 }
 
 template<>

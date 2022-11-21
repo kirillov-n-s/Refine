@@ -15,6 +15,7 @@ public:
     static void load(
             Refine::Geometry::MeshTri *mesh,
             Refine::PBD::ProblemPositional *problem,
+            Refine::Rendering::GlBuffer *glBuffer,
             Refine::Rendering::GlMesh *glMesh,
             Refine::Rendering::GlShader *glShader);
     static void run();
@@ -29,8 +30,9 @@ private:
     static inline Refine::Geometry::MeshTri *s_mesh;
     static inline Refine::PBD::ProblemPositional *s_problem;
 
-    static inline Refine::Rendering::GlMesh* s_glMesh;
-    static inline Refine::Rendering::GlShader* s_glShader;
+    static inline Refine::Rendering::GlBuffer *s_glBuffer;
+    static inline Refine::Rendering::GlMesh *s_glMesh;
+    static inline Refine::Rendering::GlShader *s_glShader;
 
     static inline Refine::Rendering::Camera s_camera;
 
@@ -47,9 +49,11 @@ private:
     static inline const glm::mat4 s_model = glm::mat4 { 1.f };
     static inline const glm::mat4 s_normalModel = glm::transpose(glm::inverse(s_model));
 
-    static inline const glm::vec4 s_surfaceColor {0.7f, 0.5f, 0.4f, 1.0f};//{0.4f, 0.5f, 0.8f, 1.0f};
-    static inline const glm::vec4 s_wireframeColor {0.125f, 0.125f, 0.125f, 1.0f};
-    static inline const glm::vec4 s_backgroundColor {0.5f, 0.5f, 0.5f, 1.0f};
+    static inline const glm::vec4 s_surfaceColor {0.1f, 0.1f, 0.1f, 1.0f};//{0.7f, 0.5f, 0.4f, 1.0f};//{0.4f, 0.5f, 0.8f, 1.0f};
+    static inline const glm::vec4 s_wireframeColor {0.8f, 0.8f, 0.8f, 1.0f};//{0.125f, 0.125f, 0.125f, 1.0f};
+    static inline const glm::vec4 s_backgroundColor {0.4f, 0.4f, 0.4f, 1.0f};
+
+    static inline bool s_isPaused = true;
 
     static void resizeCallback(
             GLFWwindow*,
@@ -72,6 +76,7 @@ private:
 
     static void handleCameraMovement(const float dt);
     static void runSimulation(const float dt);
+    static void updateVisuals();
     static void render();
 };
 

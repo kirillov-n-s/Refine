@@ -24,7 +24,7 @@ void main()
 
         vec3 k_ambient = vec3(0.3);
         vec3 k_diffuse = vec3(0.5);
-        vec3 k_specular = vec3(0.5);
+        vec3 k_specular = vec3(1.0);
         float shininess = 32.;
 
         float dotdiffuse = max(dot(normal, neglightdir), 0.0);
