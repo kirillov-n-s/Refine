@@ -1,19 +1,19 @@
 #ifndef REFINE_RENDERING_GLMESH_H
 #define REFINE_RENDERING_GLMESH_H
 
-#include "GlBuffer.h"
+#include "Buffer.h"
 
 namespace Refine::Rendering {
 
     class GlMesh
     {
     public:
-        GlMesh(const GlBuffer &buffer);
+        GlMesh(const Buffer &buffer);
         ~GlMesh();
 
         void draw() const;
 
-        void swapVertexBuffer(const GlBuffer &buffer) const;
+        void swapVertexBuffer(const Buffer &buffer) const;
 
     private:
         int m_nElements;

@@ -15,7 +15,7 @@ public:
     static void load(
             Refine::Geometry::MeshTri *mesh,
             Refine::PBD::ProblemPositional *problem,
-            Refine::Rendering::GlBuffer *glBuffer,
+            Refine::Rendering::Buffer *glBuffer,
             Refine::Rendering::GlMesh *glMesh,
             Refine::Rendering::GlShader *glShader);
     static void run();
@@ -23,37 +23,37 @@ public:
 
 private:
     static inline GLFWwindow* s_window;
+
     static inline int s_width;
     static inline int s_height;
     static inline float s_aspectRatio;
 
-    static inline Refine::Geometry::MeshTri *s_mesh;
-    static inline Refine::PBD::ProblemPositional *s_problem;
-
-    static inline Refine::Rendering::GlBuffer *s_glBuffer;
-    static inline Refine::Rendering::GlMesh *s_glMesh;
-    static inline Refine::Rendering::GlShader *s_glShader;
-
-    static inline Refine::Rendering::Camera s_camera;
+    static inline float s_sensitivity = 0.1f;
+    static inline float s_speed = 2.5f;
+    static inline float s_fov = 45.f;
+    static inline float s_near = 0.1f;
+    static inline float s_far = 1000.f;
 
     static inline float s_xPrevPos;
     static inline float s_yPrevPos;
 
-    static inline const float s_sensitivity = 0.1f;
-    static inline float s_speed = 2.5f;
+    static inline Refine::Geometry::MeshTri *s_mesh;
+    static inline Refine::PBD::ProblemPositional *s_problem;
 
-    static inline const float s_fov = 45.f;
-    static inline const float s_near = 0.1f;
-    static inline const float s_far = 1000.f;
+    static inline Refine::Rendering::Buffer *s_buffer;
+    static inline Refine::Rendering::GlMesh *s_glMesh;
+    static inline Refine::Rendering::GlShader *s_glShader;
+    static inline Refine::Rendering::Camera s_camera;
 
-    static inline const glm::mat4 s_model = glm::mat4 { 1.f };
-    static inline const glm::mat4 s_normalModel = glm::transpose(glm::inverse(s_model));
+    static inline glm::mat4 s_model = glm::mat4 { 1.f };
+    static inline glm::mat4 s_normalModel = glm::transpose(glm::inverse(s_model));
 
-    static inline const glm::vec4 s_surfaceColor {0.1f, 0.1f, 0.1f, 1.0f};//{0.7f, 0.5f, 0.4f, 1.0f};//{0.4f, 0.5f, 0.8f, 1.0f};
-    static inline const glm::vec4 s_wireframeColor {0.8f, 0.8f, 0.8f, 1.0f};//{0.125f, 0.125f, 0.125f, 1.0f};
-    static inline const glm::vec4 s_backgroundColor {0.4f, 0.4f, 0.4f, 1.0f};
+    static inline glm::vec4 s_surfaceColor {0.1f, 0.1f, 0.1f, 1.0f};//{0.7f, 0.5f, 0.4f, 1.0f};//{0.4f, 0.5f, 0.8f, 1.0f};
+    static inline glm::vec4 s_wireframeColor {0.65f, 0.65f, 0.65f, 1.0f};//{0.125f, 0.125f, 0.125f, 1.0f};
+    static inline glm::vec4 s_backgroundColor {0.4f, 0.4f, 0.4f, 1.0f};
 
     static inline bool s_isPaused = true;
+    static inline bool s_enableFaceCulling = true;
 
     static void resizeCallback(
             GLFWwindow*,

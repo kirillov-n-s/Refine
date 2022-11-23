@@ -13,10 +13,10 @@ void Demo::create(int width, int height, std::string &error)
     glfwInit();
     glfwWindowHint(
             GLFW_CONTEXT_VERSION_MAJOR,
-            3);
+            4);
     glfwWindowHint(
             GLFW_CONTEXT_VERSION_MINOR,
-            3);
+            6);
     glfwWindowHint(
             GLFW_OPENGL_PROFILE,
             GLFW_OPENGL_CORE_PROFILE);
@@ -37,7 +37,7 @@ void Demo::create(int width, int height, std::string &error)
     glfwSetInputMode(
             s_window,
             GLFW_CURSOR,
-            GLFW_CURSOR_DISABLED);
+            GLFW_CURSOR_NORMAL);
 
     glfwSetFramebufferSizeCallback(s_window, resizeCallback);
     glfwSetCursorPosCallback(s_window, cursorCallback);
@@ -56,13 +56,13 @@ void Demo::create(int width, int height, std::string &error)
 void Demo::load(
         Refine::Geometry::MeshTri *mesh,
         Refine::PBD::ProblemPositional *problem,
-        Refine::Rendering::GlBuffer *glBuffer,
+        Refine::Rendering::Buffer *glBuffer,
         Refine::Rendering::GlMesh *glMesh,
         Refine::Rendering::GlShader *glShader)
 {
     s_mesh = mesh;
     s_problem = problem;
-    s_glBuffer = glBuffer;
+    s_buffer = glBuffer;
     s_glMesh = glMesh;
     s_glShader = glShader;
 }
@@ -84,8 +84,10 @@ void Demo::run()
     s_glShader->setUniform("uModel", s_model);
     s_glShader->setUniform("uNormalModel", s_normalModel);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    if (s_enableFaceCulling) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
     glFrontFace(GL_CCW);
 
     glEnable(GL_DEPTH_TEST);
@@ -194,6 +196,8 @@ void Demo::keyCallback(
         s_isPaused ^= true;
     if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
         s_camera = {};
+    if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
+        s_enableFaceCulling ^= true;
 }
 
 void Demo::handleCameraMovement(const float dt)
@@ -222,8 +226,8 @@ void Demo::runSimulation(const float dt)
 
 void Demo::updateVisuals()
 {
-    s_glBuffer->updateGeometry(s_mesh->vertices, s_mesh->normals);
-    s_glMesh->swapVertexBuffer(*s_glBuffer);
+    s_buffer->updateGeometry(s_mesh->vertices, s_mesh->normals);
+    s_glMesh->swapVertexBuffer(*s_buffer);
 }
 
 void Demo::render()

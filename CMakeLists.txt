@@ -18,11 +18,15 @@ add_executable(Refine
         Refine/IO/Obj.cpp Refine/IO/Obj.h
 
         Refine/Rendering/Camera.cpp Refine/Rendering/Camera.h
-        Refine/Rendering/GlBuffer.cpp Refine/Rendering/GlBuffer.h
+        Refine/Rendering/Buffer.cpp Refine/Rendering/Buffer.h
         Refine/Rendering/GlMesh.cpp Refine/Rendering/GlMesh.h
         Refine/Rendering/GlShader.cpp Refine/Rendering/GlShader.h
 
-        Refine/PBD/ProblemPositional.cpp Refine/PBD/ProblemPositional.h Refine/PBD/Forces.cpp Refine/PBD/Forces.h Refine/PBD/Constraints.cpp Refine/PBD/Constraints.h Refine/Spatial/AABB.h)
+        Refine/PBD/ProblemPositional.cpp Refine/PBD/ProblemPositional.h
+        Refine/PBD/Forces.cpp Refine/PBD/Forces.h
+        Refine/PBD/Constraints.cpp Refine/PBD/Constraints.h
+
+        Refine/Spatial/AABB.h)
 
 target_link_libraries(Refine GL)
 target_link_libraries(Refine GLEW)

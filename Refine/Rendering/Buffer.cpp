@@ -1,5 +1,5 @@
 #include <unordered_map>
-#include "GlBuffer.h"
+#include "Buffer.h"
 
 namespace Refine::Rendering {
 
@@ -69,7 +69,7 @@ namespace Refine::Rendering {
         return !(lhs == rhs);
     }
 
-    GlBuffer::GlBuffer(const Geometry::MeshTri &mesh)
+    Buffer::Buffer(const Geometry::MeshTri &mesh)
     {
         std::unordered_map<Index, unsigned int> indToElemMap;
         const int nFlatIndices = mesh.vertexIndices.size();
@@ -92,7 +92,7 @@ namespace Refine::Rendering {
         }
     }
 
-    void GlBuffer::updateGeometry(
+    void Buffer::updateGeometry(
             const std::vector<glm::vec3> &vertices,
             const std::vector<glm::vec3> &normals)
     {

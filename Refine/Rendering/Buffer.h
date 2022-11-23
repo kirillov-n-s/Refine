@@ -43,10 +43,10 @@ namespace Refine::Rendering {
             const Point &lhs,
             const Point &rhs);
 
-    class GlBuffer
+    class Buffer
     {
     public:
-        GlBuffer(const Geometry::MeshTri &mesh);
+        Buffer(const Geometry::MeshTri &mesh);
 
         void updateGeometry(
                 const std::vector<glm::vec3> &vertices,
