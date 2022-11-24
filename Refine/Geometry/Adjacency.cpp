@@ -31,6 +31,32 @@ namespace Refine::Geometry::Adjacency {
         return {edges.begin(), edges.end()};
     }
 
+    std::vector<Edge> vertexToVertexAsEdgesDirected(
+            const std::vector<int> &vertexIndicesTri)
+    {
+        assert(vertexIndicesTri.size() % 3 == 0);
+
+        std::set<Edge> edges;
+
+        const int nTriangles = vertexIndicesTri.size() / 3;
+        for (int triangleInd = 0; triangleInd < nTriangles; ++triangleInd) {
+
+            const int a = vertexIndicesTri[triangleInd * 3 + 0];
+            const int b = vertexIndicesTri[triangleInd * 3 + 1];
+            const int c = vertexIndicesTri[triangleInd * 3 + 2];
+
+            assert(a != b);
+            assert(a != c);
+            assert(b != c);
+
+            edges.insert(Edge {a, b});
+            edges.insert(Edge {a, c});
+            edges.insert(Edge {b, c});
+        }
+
+        return {edges.begin(), edges.end()};
+    }
+
     std::vector<Dihedral> triangleToTriangleAsDihedrals(
             const std::vector<int> &vertexIndicesTri)
     {

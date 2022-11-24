@@ -14,7 +14,7 @@ int main()
 
     std::string error = "";
     const Refine::Geometry::MeshPoly meshPoly = Refine::IO::readObj(
-            pathMeshes + "sphereL0.obj",
+            pathMeshes + "WrapHead.obj",
             error,
             Refine::IO::SettingsObjReader
             {
@@ -33,28 +33,28 @@ int main()
 
     const int nVertices = meshTri.vertices.size();
     std::vector<float> weights(nVertices, 1.0f);
-    weights.front() = 0.0f;
-    //weights.back() = 0.0f;
+    //weights.front() = 0.0f;
 
     const Refine::Spatial::AABB aabb {
-        .min = glm::vec3(-2.0f),
-        .max = glm::vec3(10.0f)
+        .min = glm::vec3(-4.0f, -6.0f, -4.0f),
+        .max = glm::vec3(4.0f, 6.0f, 4.0f)
     };
     Refine::PBD::ProblemPositional problem(
             meshTri.vertices,
             weights,
             aabb,
-            10,
-            30);
+            5,
+            10);
     problem.addForce(new Refine::PBD::ForceConstant());
 
     const std::vector<Refine::Geometry::Adjacency::Edge> edges =
             Refine::Geometry::Adjacency::vertexToVertexAsEdges(meshTri.vertexIndices);
-    problem.addConstraint(new Refine::PBD::ConstraintDistance(meshTri.vertices, edges, 0.005f));
+    problem.addConstraint(new Refine::PBD::ConstraintARAP(meshTri.vertices, edges, 0.0001f));
+    //problem.addConstraint(new Refine::PBD::ConstraintDistance(meshTri.vertices, edges, 0.005f));
 
-    const std::vector<Refine::Geometry::Adjacency::Dihedral> dihedrals =
+    /*const std::vector<Refine::Geometry::Adjacency::Dihedral> dihedrals =
             Refine::Geometry::Adjacency::triangleToTriangleAsDihedrals(meshTri.vertexIndices);
-    problem.addConstraint(new Refine::PBD::ConstraintDihedral(meshTri.vertices, dihedrals, 0.005f));
+    problem.addConstraint(new Refine::PBD::ConstraintDihedral(meshTri.vertices, dihedrals, 0.005f));*/
 
     Refine::Rendering::Buffer glBuffer(meshTri);
 

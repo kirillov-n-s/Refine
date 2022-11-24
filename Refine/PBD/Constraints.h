@@ -46,6 +46,26 @@ namespace Refine::PBD {
         std::vector<float> m_restDistances;
     };
 
+    class ConstraintARAP : public Constraint
+    {
+    public:
+        ConstraintARAP(
+                const std::vector<glm::vec3> &restPositions,
+                const std::vector<Geometry::Adjacency::Edge> &edges,
+                const float compliance = 0.0f);
+
+        void solve(
+                std::vector<glm::vec3> &positions,
+                const std::vector<float> &weights,
+                const float dt,
+                const glm::vec3 &min,
+                const glm::vec3 &max) override;
+
+    private:
+        std::vector<Geometry::Adjacency::Edge> m_edges;
+        std::vector<glm::vec3> m_restEdgeVectors;
+    };
+
     class ConstraintDihedral : public Constraint
     {
     public:

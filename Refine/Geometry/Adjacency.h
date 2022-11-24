@@ -11,6 +11,8 @@ namespace Refine::Geometry::Adjacency {
 
     std::vector<Edge> vertexToVertexAsEdges(
             const std::vector<int> &vertexIndicesTri);
+    std::vector<Edge> vertexToVertexAsEdgesDirected(
+            const std::vector<int> &vertexIndicesTri);
 
     std::vector<Dihedral> triangleToTriangleAsDihedrals(
             const std::vector<int> &vertexIndicesTri);

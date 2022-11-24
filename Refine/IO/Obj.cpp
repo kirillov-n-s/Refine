@@ -64,7 +64,7 @@ namespace Refine::IO {
                 file >> z;
                 if (!file)
                     file.clear();
-                else if (settings.errorOnTexcoord3NotZero && Common::fuzzyIsNull(z))
+                else if (settings.readTexcoords && settings.errorOnTexcoord3NotZero && Common::fuzzyIsNull(z))
                     error = "3rd texture coordinate not equal to 0.";
                 if (!error.empty())
                     return {};

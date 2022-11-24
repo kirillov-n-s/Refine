@@ -62,6 +62,59 @@ namespace Refine::PBD {
         }
     }
 
+    ConstraintARAP::ConstraintARAP(
+            const std::vector<glm::vec3> &restPositions,
+            const std::vector<Geometry::Adjacency::Edge> &edges,
+            const float compliance)
+        : Constraint(compliance),
+          m_restEdgeVectors(edges.size()),
+          m_edges(edges)
+    {
+        const int nEdges = edges.size();
+        for (int edgeInd = 0; edgeInd < nEdges; ++edgeInd) {
+
+            const Geometry::Adjacency::Edge &edge = m_edges[edgeInd];
+            m_restEdgeVectors[edgeInd] = restPositions[edge[1]] - restPositions[edge[0]];
+        }
+    }
+
+    void ConstraintARAP::solve(
+            std::vector<glm::vec3> &positions,
+            const std::vector<float> &weights,
+            const float dt,
+            const glm::vec3 &min,
+            const glm::vec3 &max)
+    {
+        const int nPositions = positions.size();
+        const int nEdges = m_edges.size();
+        for (int edgeInd = 0; edgeInd < nEdges; ++edgeInd) {
+
+            const Geometry::Adjacency::Edge &edge = m_edges[edgeInd];
+            const glm::vec3 &restEdgeVec = m_restEdgeVectors[edgeInd];
+
+            const int i1 = edge[0];
+            const int i2 = edge[1];
+
+            assert(i1 >= 0 && i1 < nPositions);
+            assert(i2 >= 0 && i2 < nPositions);
+
+            glm::vec3 &x1 = positions[i1];
+            glm::vec3 &x2 = positions[i2];
+
+            const glm::vec3 edgeVec = x2 - x1;
+
+            const float w1 = weights[i1];
+            const float w2 = weights[i2];
+
+            const glm::vec3 tmp = (edgeVec - restEdgeVec) / (w1 + w2 + compliance / (dt * dt));
+
+            x1 += w1 * tmp;
+            x1 = glm::clamp(x1, min, max);
+            x2 += -w2 * tmp;
+            x2 = glm::clamp(x2, min, max);
+        }
+    }
+
     ConstraintDihedral::ConstraintDihedral(
             const std::vector<glm::vec3> &restPositions,
             const std::vector<Geometry::Adjacency::Dihedral> &dihedrals,
