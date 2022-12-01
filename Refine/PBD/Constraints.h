@@ -85,6 +85,26 @@ namespace Refine::PBD {
         std::vector<Geometry::Adjacency::Dihedral> m_dihedrals;
         std::vector<float> m_restAngles;
     };
+
+    class ConstraintDihedralImstk : public Constraint
+    {
+    public:
+        ConstraintDihedralImstk(
+                const std::vector<glm::vec3> &restPositions,
+                const std::vector<Geometry::Adjacency::Dihedral> &dihedrals,
+                const float compliance = 0.0f);
+
+        void solve(
+                std::vector<glm::vec3> &positions,
+                const std::vector<float> &weights,
+                const float dt,
+                const glm::vec3 &min,
+                const glm::vec3 &max) override;
+
+    private:
+        std::vector<Geometry::Adjacency::Dihedral> m_dihedrals;
+        std::vector<float> m_restAngles;
+    };
 }
 
 #endif

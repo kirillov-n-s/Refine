@@ -133,6 +133,105 @@ namespace Refine::PBD {
             const glm::vec3 &p2 = restPositions[dihedral[2]];
             const glm::vec3 &p3 = restPositions[dihedral[3]];
 
+            const glm::vec3 n1 = glm::normalize(glm::cross(p3 - p2, p0 - p2));
+            const glm::vec3 n2 = glm::normalize(glm::cross(p3 - p2, p1 - p2));
+
+            m_restAngles[dihedralInd] = std::acos(glm::dot(n1, n2));
+        }
+    }
+
+    void ConstraintDihedral::solve(
+            std::vector<glm::vec3> &positions,
+            const std::vector<float> &weights,
+            const float dt,
+            const glm::vec3 &min,
+            const glm::vec3 &max)
+    {
+        const int nPositions = positions.size();
+        const int nDihedrals = m_dihedrals.size();
+        for (int dihedralInd = 0; dihedralInd < nDihedrals; ++dihedralInd) {
+
+            const Geometry::Adjacency::Dihedral &dihedral = m_dihedrals[dihedralInd];
+            const float restAngle = m_restAngles[dihedralInd];
+
+            const int i0 = dihedral[0];
+            const int i1 = dihedral[1];
+            const int i2 = dihedral[2];
+            const int i3 = dihedral[3];
+
+            assert(i0 >= 0 && i0 < nPositions);
+            assert(i1 >= 0 && i1 < nPositions);
+            assert(i2 >= 0 && i2 < nPositions);
+            assert(i3 >= 0 && i3 < nPositions);
+
+            glm::vec3 &p0 = positions[i0];
+            glm::vec3 &p1 = positions[i1];
+            glm::vec3 &p2 = positions[i2];
+            glm::vec3 &p3 = positions[i3];
+
+            const glm::vec3 n1 = glm::normalize(glm::cross(p3, p0));
+            const glm::vec3 n2 = glm::normalize(glm::cross(p3, p1));
+
+            const float d = glm::dot(n1, n2);
+
+            const glm::vec3 p3n1 = glm::cross(p3, n1);
+            const glm::vec3 p3n2 = glm::cross(p3, n2);
+            const glm::vec3 p0n2 = glm::cross(p0, n2);
+            const glm::vec3 n1p0 = glm::cross(n1, p0);
+            const glm::vec3 p1n1 = glm::cross(p1, n1);
+            const glm::vec3 n2p1 = glm::cross(n2, p1);
+
+            const float p3p0_l = glm::length(glm::cross(p3, p0));
+            const float p3p1_l = glm::length(glm::cross(p3, p1));
+
+            const glm::vec3 q0 = (p3n2 - p3n1 * d) / p3p0_l;
+            const glm::vec3 q1 = (p3n1 - p3n2 * d) / p3p1_l;
+            const glm::vec3 q3 = -(p0n2 + n1p0 * d) / p3p0_l - (p1n1 + n2p1 * d) / p3p1_l;
+            const glm::vec3 q2 = -q0 - q1 - q3;
+
+            const float w0 = weights[i0];
+            const float w1 = weights[i1];
+            const float w2 = weights[i2];
+            const float w3 = weights[i3];
+
+            const float q0_l2 = glm::length2(q0);
+            const float q1_l2 = glm::length2(q1);
+            const float q2_l2 = glm::length2(q2);
+            const float q3_l2 = glm::length2(q3);
+
+            const float c = std::acos(d) - restAngle;
+            const float lambda = -c * std::sqrt(1.0f - d * d)
+                    / (w0 * q0_l2 + w1 * q1_l2 + w2 * q2_l2 + w3 * q3_l2 + compliance / (dt * dt));
+
+            p0 += lambda * w0 * q0;
+            p0 = glm::clamp(p0, min, max);
+            p1 += lambda * w1 * q1;
+            p1 = glm::clamp(p1, min, max);
+            p2 += lambda * w2 * q2;
+            p2 = glm::clamp(p2, min, max);
+            p3 += lambda * w3 * q3;
+            p3 = glm::clamp(p3, min, max);
+        }
+    }
+
+    ConstraintDihedralImstk::ConstraintDihedralImstk(
+            const std::vector<glm::vec3> &restPositions,
+            const std::vector<Geometry::Adjacency::Dihedral> &dihedrals,
+            const float compliance)
+        : Constraint(compliance),
+          m_dihedrals(dihedrals),
+          m_restAngles(dihedrals.size())
+    {
+        const int nDihedrals = dihedrals.size();
+        for (int dihedralInd = 0; dihedralInd < nDihedrals; ++dihedralInd) {
+
+            const Geometry::Adjacency::Dihedral &dihedral = m_dihedrals[dihedralInd];
+
+            const glm::vec3 &p0 = restPositions[dihedral[0]];
+            const glm::vec3 &p1 = restPositions[dihedral[1]];
+            const glm::vec3 &p2 = restPositions[dihedral[2]];
+            const glm::vec3 &p3 = restPositions[dihedral[3]];
+
             const glm::vec3 n1 = glm::normalize(glm::cross(p2 - p0, p3 - p0));
             const glm::vec3 n2 = glm::normalize(glm::cross(p3 - p1, p2 - p1));
 
@@ -142,7 +241,7 @@ namespace Refine::PBD {
         }
     }
 
-    void ConstraintDihedral::solve(
+    void ConstraintDihedralImstk::solve(
             std::vector<glm::vec3> &positions,
             const std::vector<float> &weights,
             const float dt,

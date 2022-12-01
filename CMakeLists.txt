@@ -28,6 +28,9 @@ add_executable(Refine
 
         Refine/Spatial/AABB.h)
 
+find_package(embree 3.0 REQUIRED)
+
 target_link_libraries(Refine GL)
 target_link_libraries(Refine GLEW)
 target_link_libraries(Refine glfw)
+target_link_libraries(Refine embree)

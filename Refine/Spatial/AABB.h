@@ -7,8 +7,8 @@ namespace Refine::Spatial {
 
     struct AABB
     {
-        glm::vec3 min;
-        glm::vec3 max;
+        glm::vec3 min {-std::numeric_limits<float>::max()};
+        glm::vec3 max {std::numeric_limits<float>::max()};
     };
 }
 
